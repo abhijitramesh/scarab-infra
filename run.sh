@@ -34,10 +34,6 @@ help()
   echo "c     Clean up all the containers/volumes after run. 0: No clean up 2: Clean up e.g) -c 1"
 }
 
-SHORT=h:,o:,b:,t:,s:,e:,p:,c:
-LONG=help:,outdir:,build:,trace:,scarab:,experiment:,plot:,cleanup:
-OPTS=$(getopt -a -n run.sh --options $SHORT --longoptions $LONG -- "$@")
-
 VALID_ARGUMENTS=$# # Returns the count of arguments that are in short or long options
 
 if [ "$VALID_ARGUMENTS" -eq 0 ]; then
@@ -45,9 +41,7 @@ if [ "$VALID_ARGUMENTS" -eq 0 ]; then
   exit 0
 fi
 
-eval set -- "$OPTS"
-
-# Get the options
+# Get the options (compatible with both macOS and Linux)
 while [[ $# -gt 0 ]];
 do
   case "$1" in
@@ -83,13 +77,16 @@ do
       CLEANUP=$2
       shift 2
       ;;
-    --)
-      shift 2
+    --) # end of options
+      shift
       break
       ;;
-    *) # unexpected option
+    -*) # unexpected option
       echo "Unexpected option: $1"
       exit 1
+      ;;
+    *) # no more options
+      break
       ;;
   esac
 done
